@@ -1,0 +1,24 @@
+---
+import type { Cat } from '../lib/airtable';
+
+interface Props {
+  cat: Cat;
+}
+
+const { cat } = Astro.props;
+---
+
+<article class="rounded-2xl border border-amber-100 shadow-sm overflow-hidden bg-white flex flex-col">
+  {cat.photoUrl ? (
+    <img src={cat.photoUrl} alt={cat.name} class="w-full h-64 object-cover" loading="lazy" />
+  ) : (
+    <div class="w-full h-64 bg-amber-50 flex items-center justify-center text-amber-300 text-5xl">🐱</div>
+  )}
+  <div class="p-5 flex-1 flex flex-col gap-2">
+    <h3 class="text-xl font-bold text-amber-900">{cat.name}</h3>
+    <p class="text-xs uppercase tracking-wide text-stone-500">
+      {[cat.sex, cat.age, cat.breed].filter(Boolean).join(' · ')}
+    </p>
+    {cat.notes && <p class="text-sm text-stone-700 leading-relaxed">{cat.notes}</p>}
+  </div>
+</article>

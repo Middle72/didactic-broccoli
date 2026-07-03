@@ -1,0 +1,64 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import CatCard from '../components/CatCard.astro';
+import { externalLinks } from '../data/links';
+import { getAdoptableCats, type Cat } from '../lib/airtable';
+
+let cats: Cat[] = [];
+let loadError = false;
+try {
+  cats = await getAdoptableCats();
+} catch (err) {
+  console.error(err);
+  loadError = true;
+}
+---
+
+<Layout title="Adoptable Kitties">
+  <section class="max-w-6xl mx-auto px-4 py-16">
+    <h1 class="text-4xl font-extrabold text-amber-900 mb-4 text-center">
+      Our Adoptable (and Foster Homes Needed for) Kitties
+    </h1>
+    <p class="max-w-2xl mx-auto text-center text-stone-700 mb-6">
+      Every kitty here is looking for more than just a home — they're looking for
+      <em>their person</em>. Can't adopt right now? Fostering is a wonderful way to help too.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4 mb-12">
+      <a
+        href={externalLinks.adoptForm}
+        target="_blank"
+        rel="noopener"
+        class="px-6 py-3 rounded-full bg-amber-700 text-white font-semibold hover:bg-amber-800 transition-colors"
+      >
+        Apply to Adopt
+      </a>
+      <a
+        href={externalLinks.fosterForm}
+        target="_blank"
+        rel="noopener"
+        class="px-6 py-3 rounded-full bg-amber-100 text-amber-900 font-semibold hover:bg-amber-200 transition-colors"
+      >
+        Apply to Foster
+      </a>
+    </div>
+
+    {loadError && (
+      <p class="text-center text-red-600 mb-8">
+        We're having trouble loading current kitties right now. Please check back soon, or reach out
+        directly at meow@luckypennykitties.org.
+      </p>
+    )}
+
+    {!loadError && cats.length === 0 && (
+      <p class="text-center text-stone-500">
+        No kitties currently listed as adoptable — check back soon!
+      </p>
+    )}
+
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {cats.map((cat) => <CatCard cat={cat} />)}
+    </div>
+  </section>
+</Layout>

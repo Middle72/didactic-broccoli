@@ -1,0 +1,32 @@
+---
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/adoptable', label: 'Adoptable Kitties' },
+  { href: '/rehabilitation', label: 'Rehabilitation in Progress' },
+  { href: '/sponsors', label: 'Sponsors' },
+  { href: '/community', label: 'Community Involvement' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="bg-amber-50 border-b border-amber-200 sticky top-0 z-50">
+  <nav class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <a href="/" class="text-xl font-bold text-amber-900">🐾 Lucky Penny Kitties</a>
+    <ul class="flex flex-wrap gap-x-5 gap-y-1 text-sm font-medium">
+      {navItems.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class:list={[
+              'hover:text-amber-700 transition-colors',
+              currentPath === item.href ? 'text-amber-800 underline underline-offset-4' : 'text-stone-700',
+            ]}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>

@@ -1,0 +1,27 @@
+---
+import { contact } from '../data/links';
+---
+
+<footer class="bg-stone-900 text-stone-300 mt-16">
+  <div class="max-w-6xl mx-auto px-4 py-10 grid gap-8 sm:grid-cols-3 text-sm">
+    <div>
+      <p class="text-white font-semibold mb-2">Lucky Penny Kitties, Inc.</p>
+      <p>501(c)(3) foster-based cat rescue</p>
+      <p>Waverly, Iowa</p>
+      <p>EIN: 99-0545247</p>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-2">Contact</p>
+      <p><a class="hover:text-amber-300" href={`mailto:${contact.email}`}>{contact.email}</a></p>
+      <p><a class="hover:text-amber-300" href={contact.phoneHref}>{contact.phone}</a></p>
+      <p>{contact.address}</p>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-2">No-kill. Foster-based.</p>
+      <p>Started December 2023 — 400+ cats placed in loving homes by December 2025.</p>
+    </div>
+  </div>
+  <div class="border-t border-stone-800 py-4 text-center text-xs text-stone-500">
+    &copy; {new Date().getFullYear()} Lucky Penny Kitties, Inc.
+  </div>
+</footer>

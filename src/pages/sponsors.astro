@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { sponsors } from '../data/sponsors';
+---
+
+<Layout title="Our Incredible Sponsors">
+  <section class="max-w-5xl mx-auto px-4 py-16">
+    <h1 class="text-4xl font-extrabold text-amber-900 mb-4 text-center">Our Incredible Sponsors</h1>
+    <p class="max-w-2xl mx-auto text-center text-stone-700 mb-12">
+      Lucky Penny Kitties couldn't do what we do without the generous support of our community
+      partners.
+    </p>
+
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {sponsors.map((sponsor) => (
+        <a
+          href={sponsor.link}
+          target="_blank"
+          rel="noopener"
+          class="block rounded-2xl border border-amber-100 p-6 hover:shadow-md transition-shadow"
+        >
+          {sponsor.logo && (
+            <img src={sponsor.logo} alt={sponsor.name} class="w-full h-32 object-contain mb-4" loading="lazy" />
+          )}
+          <h2 class="font-bold text-amber-900 mb-2">{sponsor.name}</h2>
+          {sponsor.blurb && <p class="text-sm text-stone-700">{sponsor.blurb}</p>}
+        </a>
+      ))}
+    </div>
+
+    <p class="text-center text-sm text-stone-400 mt-12">
+      Interested in sponsoring Lucky Penny Kitties? Reach out at
+      <a class="underline hover:text-amber-700" href="mailto:meow@luckypennykitties.org">meow@luckypennykitties.org</a>.
+    </p>
+  </section>
+</Layout>
