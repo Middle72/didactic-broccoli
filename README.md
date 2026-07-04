@@ -38,7 +38,12 @@ Status field mapping (current best-effort, since the table wasn't built with pub
 - **Sponsors**: only 3 of ~10 sponsors have confirmed names/blurbs/logos (`src/data/sponsors.ts`). The rest need names and re-uploaded logo images from Tasha.
 - **Community stories**: 10 of ~30 stories captured (`src/data/community.ts`) — the live Shopify page likely has more further down that weren't scraped.
 - **Email signup**: currently links out to the Zeffy donation form as a stand-in "subscribe" action — confirm whether Zeffy has a dedicated signup form to link instead.
-- **Deploy**: not yet deployed. Push to GitHub, connect the repo on Vercel, set the `AIRTABLE_*` env vars in the Vercel project settings, get Tasha's sign-off on the preview URL, then repoint DNS.
+- **Airtable env vars in Cloudflare Pages**: set `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_CATS_TABLE_ID` under the Pages project's Settings → Environment variables (see `.env.example` for the values), then trigger a redeploy.
+- Once the preview looks good, get Tasha's sign-off before the custom domain goes live to visitors.
+
+## Deployment
+
+Hosted on **Cloudflare Pages**, connected to this GitHub repo (build command `npm run build`, output directory `dist`). Every push to `main` triggers a new deployment automatically.
 
 ## Commands
 
