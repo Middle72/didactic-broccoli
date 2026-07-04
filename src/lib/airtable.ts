@@ -1,6 +1,8 @@
-const BASE_ID = import.meta.env.AIRTABLE_BASE_ID;
-const TABLE_ID = import.meta.env.AIRTABLE_CATS_TABLE_ID;
-const TOKEN = import.meta.env.AIRTABLE_TOKEN;
+import { getSecret } from 'astro:env/server';
+
+// Not sensitive — fixed identifiers for this project's Airtable base/table.
+const BASE_ID = 'apprSgTHj4HbR7IFB';
+const TABLE_ID = 'tbl7FbKhHAu7SgIyj';
 
 export interface Cat {
   id: string;
@@ -44,8 +46,9 @@ function recordToCat(record: AirtableRecord): Cat {
 }
 
 async function fetchCats(): Promise<Cat[]> {
-  if (!BASE_ID || !TABLE_ID || !TOKEN) {
-    console.warn('Airtable env vars are not set (AIRTABLE_BASE_ID, AIRTABLE_CATS_TABLE_ID, AIRTABLE_TOKEN); returning no cats.');
+  const token = getSecret('AIRTABLE_TOKEN');
+  if (!token) {
+    console.warn('AIRTABLE_TOKEN is not set; returning no cats.');
     return [];
   }
 
@@ -57,7 +60,7 @@ async function fetchCats(): Promise<Cat[]> {
     if (offset) url.searchParams.set('offset', offset);
 
     const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!res.ok) {

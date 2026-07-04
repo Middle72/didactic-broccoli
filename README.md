@@ -24,7 +24,9 @@ npm run dev
 
 ### Airtable
 
-Data comes from the **Lucky Penny Kitties** base (`apprSgTHj4HbR7IFB`), **Cats** table (`tbl7FbKhHAu7SgIyj`). You need a Personal Access Token from [airtable.com/create/tokens](https://airtable.com/create/tokens) with `data.records:read` scope on that base, set as `AIRTABLE_TOKEN` in `.env`.
+Data comes from the **Lucky Penny Kitties** base (`apprSgTHj4HbR7IFB`), **Cats** table (`tbl7FbKhHAu7SgIyj`) — these IDs are hardcoded in `src/lib/airtable.ts` since they aren't sensitive. You need a Personal Access Token from [airtable.com/create/tokens](https://airtable.com/create/tokens) with `data.records:read` scope on that base, set as `AIRTABLE_TOKEN` in `.env` locally.
+
+`AIRTABLE_TOKEN` is declared as a `secret` in `astro.config.mjs`'s `env.schema` and read via `getSecret()` from `astro:env/server` (not `import.meta.env`) — this is required for the value to come from Cloudflare's runtime bindings rather than being baked in at build time.
 
 Status field mapping (current best-effort, since the table wasn't built with public bio/rehab fields — see "Known gaps" below):
 
@@ -38,12 +40,13 @@ Status field mapping (current best-effort, since the table wasn't built with pub
 - **Sponsors**: only 3 of ~10 sponsors have confirmed names/blurbs/logos (`src/data/sponsors.ts`). The rest need names and re-uploaded logo images from Tasha.
 - **Community stories**: 10 of ~30 stories captured (`src/data/community.ts`) — the live Shopify page likely has more further down that weren't scraped.
 - **Email signup**: currently links out to the Zeffy donation form as a stand-in "subscribe" action — confirm whether Zeffy has a dedicated signup form to link instead.
-- **Airtable env vars in Cloudflare Pages**: set `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_CATS_TABLE_ID` under the Pages project's Settings → Environment variables (see `.env.example` for the values), then trigger a redeploy.
 - Once the preview looks good, get Tasha's sign-off before the custom domain goes live to visitors.
 
 ## Deployment
 
-Hosted on **Cloudflare Pages**, connected to this GitHub repo (build command `npm run build`, output directory `dist`). Every push to `main` triggers a new deployment automatically.
+Hosted on **Cloudflare Workers** (Workers Builds), connected to this GitHub repo — see `wrangler.jsonc` for the Worker name and custom domain routes. Build command `npm run build`, deploy command `npx wrangler deploy`. Every push to `main` triggers a new build + deploy automatically.
+
+Set the `AIRTABLE_TOKEN` secret under the Worker's **Settings → Variables and secrets** in the Cloudflare dashboard (type: Secret) — without it, the Adoptable/Rehabilitation pages just show an empty state.
 
 ## Commands
 
