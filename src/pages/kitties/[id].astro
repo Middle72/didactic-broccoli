@@ -1,0 +1,77 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { externalLinks } from '../../data/links';
+import { getCatById } from '../../lib/airtable';
+
+const { id } = Astro.params;
+const cat = id ? await getCatById(id) : null;
+
+if (!cat) {
+  Astro.response.status = 404;
+}
+---
+
+<Layout title={cat ? cat.name : 'Kitty not found'}>
+  <section class="max-w-3xl mx-auto px-4 py-16">
+    <a href="/adoptable" class="text-sm text-amber-700 hover:underline">&larr; Back to Adoptable Kitties</a>
+
+    {cat ? (
+      <div class="mt-6">
+        {cat.photos.length > 0 ? (
+          <div class="grid gap-3 sm:grid-cols-2 mb-6">
+            {cat.photos.map((url) => (
+              <img src={url} alt={cat.name} class="w-full h-72 object-cover rounded-2xl" loading="lazy" />
+            ))}
+          </div>
+        ) : (
+          <div class="w-full h-72 bg-amber-50 flex items-center justify-center text-amber-300 text-6xl rounded-2xl mb-6">🐱</div>
+        )}
+
+        <div class="flex items-center gap-3 flex-wrap mb-2">
+          <h1 class="text-3xl font-extrabold text-amber-900">{cat.name}</h1>
+          {cat.status && (
+            <span class="text-xs font-semibold uppercase tracking-wide bg-amber-100 text-amber-800 px-3 py-1 rounded-full">
+              {cat.status}
+            </span>
+          )}
+        </div>
+
+        <p class="text-sm uppercase tracking-wide text-stone-500 mb-6">
+          {[cat.sex, cat.age, cat.breed].filter(Boolean).join(' · ')}
+        </p>
+
+        {cat.notes && <p class="text-stone-700 leading-relaxed mb-6 whitespace-pre-line">{cat.notes}</p>}
+
+        {cat.intakeDate && (
+          <p class="text-sm text-stone-500 mb-8">In our care since {cat.intakeDate}</p>
+        )}
+
+        <div class="flex flex-wrap gap-4">
+          <a
+            href={externalLinks.adoptForm}
+            target="_blank"
+            rel="noopener"
+            class="px-6 py-3 rounded-full bg-amber-700 text-white font-semibold hover:bg-amber-800 transition-colors"
+          >
+            Apply to Adopt
+          </a>
+          <a
+            href={externalLinks.fosterForm}
+            target="_blank"
+            rel="noopener"
+            class="px-6 py-3 rounded-full bg-amber-100 text-amber-900 font-semibold hover:bg-amber-200 transition-colors"
+          >
+            Apply to Foster
+          </a>
+        </div>
+      </div>
+    ) : (
+      <div class="mt-6">
+        <h1 class="text-2xl font-bold text-amber-900 mb-2">We couldn't find that kitty</h1>
+        <p class="text-stone-700">They may have already been adopted, or the link is out of date.</p>
+      </div>
+    )}
+  </section>
+</Layout>

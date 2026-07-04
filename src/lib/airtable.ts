@@ -14,6 +14,7 @@ export interface Cat {
   intakeDate: string;
   notes: string;
   photoUrl: string | null;
+  photos: string[];
 }
 
 interface AirtableRecord {
@@ -42,6 +43,7 @@ function recordToCat(record: AirtableRecord): Cat {
     intakeDate: f['Intake Date'] ?? '',
     notes: f['Medical Notes'] ?? '',
     photoUrl: f.Photos?.[0]?.url ?? null,
+    photos: f.Photos?.map((p) => p.url) ?? [],
   };
 }
 
@@ -86,4 +88,24 @@ export async function getAdoptableCats(): Promise<Cat[]> {
 export async function getRehabCats(): Promise<Cat[]> {
   const cats = await fetchCats();
   return cats.filter((cat) => cat.status === REHAB_STATUS);
+}
+
+export async function getCatById(id: string): Promise<Cat | null> {
+  const token = getSecret('AIRTABLE_TOKEN');
+  if (!token) {
+    console.warn('AIRTABLE_TOKEN is not set; cannot look up cat.');
+    return null;
+  }
+
+  const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}/${id}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(`Airtable request failed: ${res.status} ${res.statusText}`);
+  }
+
+  return recordToCat(await res.json());
 }

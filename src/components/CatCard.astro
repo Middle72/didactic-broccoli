@@ -8,7 +8,10 @@ interface Props {
 const { cat } = Astro.props;
 ---
 
-<article class="rounded-2xl border border-amber-100 shadow-sm overflow-hidden bg-white flex flex-col">
+<a
+  href={`/kitties/${cat.id}`}
+  class="rounded-2xl border border-amber-100 shadow-sm overflow-hidden bg-white flex flex-col hover:shadow-md transition-shadow"
+>
   {cat.photoUrl ? (
     <img src={cat.photoUrl} alt={cat.name} class="w-full h-64 object-cover" loading="lazy" />
   ) : (
@@ -19,6 +22,6 @@ const { cat } = Astro.props;
     <p class="text-xs uppercase tracking-wide text-stone-500">
       {[cat.sex, cat.age, cat.breed].filter(Boolean).join(' · ')}
     </p>
-    {cat.notes && <p class="text-sm text-stone-700 leading-relaxed">{cat.notes}</p>}
+    {cat.notes && <p class="text-sm text-stone-700 leading-relaxed line-clamp-3">{cat.notes}</p>}
   </div>
-</article>
+</a>
