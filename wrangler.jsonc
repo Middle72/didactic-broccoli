@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "didactic-broccoli",
   "compatibility_date": "2026-04-15",
+  "assets": {
+    "run_worker_first": true
+  },
   "routes": [
     { "pattern": "luckypennykitties.com", "custom_domain": true },
     { "pattern": "www.luckypennykitties.com", "custom_domain": true },
