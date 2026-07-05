@@ -29,12 +29,15 @@ interface AirtableRecord {
     'Intake Date'?: string;
     'Spay/Neuter Date'?: string;
     'Medical Notes'?: string;
-    Photos?: { url: string }[];
+    'Photo Main'?: { url: string }[];
+    'Photos Details'?: { url: string }[];
   };
 }
 
 function recordToCat(record: AirtableRecord): Cat {
   const f = record.fields;
+  const mainPhotos = f['Photo Main']?.map((p) => p.url) ?? [];
+  const detailPhotos = f['Photos Details']?.map((p) => p.url) ?? [];
   return {
     id: record.id,
     name: f.Name ?? 'Unnamed',
@@ -45,8 +48,8 @@ function recordToCat(record: AirtableRecord): Cat {
     intakeDate: f['Intake Date'] ?? '',
     spayNeuterDate: f['Spay/Neuter Date'] ?? '',
     notes: f['Medical Notes'] ?? '',
-    photoUrl: f.Photos?.[0]?.url ?? null,
-    photos: f.Photos?.map((p) => p.url) ?? [],
+    photoUrl: mainPhotos[0] ?? null,
+    photos: [...mainPhotos, ...detailPhotos],
   };
 }
 
