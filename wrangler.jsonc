@@ -4,6 +4,8 @@
   "compatibility_date": "2026-04-15",
   "routes": [
     { "pattern": "luckypennykitties.com", "custom_domain": true },
-    { "pattern": "www.luckypennykitties.com", "custom_domain": true }
+    { "pattern": "www.luckypennykitties.com", "custom_domain": true },
+    { "pattern": "bobbykelly.us", "custom_domain": true },
+    { "pattern": "www.bobbykelly.us", "custom_domain": true }
   ]
 }
