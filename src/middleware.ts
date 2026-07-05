@@ -2,7 +2,7 @@ import { defineMiddleware } from 'astro:middleware';
 
 const REDIRECT_HOSTS = new Set(['luckypennykitties.com', 'www.luckypennykitties.com']);
 const REDIRECT_TARGET_HOST = 'luckypennykitties.org';
-const COUNTDOWN_SECONDS = 7;
+const COUNTDOWN_SECONDS = 15;
 
 function forwardingPage(destination: string): string {
   return `<!doctype html>
@@ -10,7 +10,7 @@ function forwardingPage(destination: string): string {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lucky Penny Kitties has moved</title>
+    <title>Lucky Penny Kitties</title>
     <meta http-equiv="refresh" content="${COUNTDOWN_SECONDS};url=${destination}" />
     <style>
       body {
@@ -34,9 +34,9 @@ function forwardingPage(destination: string): string {
   </head>
   <body>
     <div class="card">
-      <h1>🐾 Lucky Penny Kitties has a new home</h1>
+      <h1>🐾 Lucky Penny Kitties</h1>
       <p>
-        We've moved to <a href="${destination}">luckypennykitties.org</a>.
+        You can find us at <a href="${destination}">luckypennykitties.org</a>.
         Redirecting in <span class="count" id="count">${COUNTDOWN_SECONDS}</span> seconds&hellip;
       </p>
       <p><a href="${destination}">Click here if you're not redirected automatically</a></p>
