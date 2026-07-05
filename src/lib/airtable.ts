@@ -12,6 +12,7 @@ export interface Cat {
   age: string;
   status: string;
   intakeDate: string;
+  spayNeuterDate: string;
   notes: string;
   photoUrl: string | null;
   photos: string[];
@@ -26,6 +27,7 @@ interface AirtableRecord {
     Age?: string;
     Status?: string;
     'Intake Date'?: string;
+    'Spay/Neuter Date'?: string;
     'Medical Notes'?: string;
     Photos?: { url: string }[];
   };
@@ -41,6 +43,7 @@ function recordToCat(record: AirtableRecord): Cat {
     age: f.Age ?? '',
     status: f.Status ?? '',
     intakeDate: f['Intake Date'] ?? '',
+    spayNeuterDate: f['Spay/Neuter Date'] ?? '',
     notes: f['Medical Notes'] ?? '',
     photoUrl: f.Photos?.[0]?.url ?? null,
     photos: f.Photos?.map((p) => p.url) ?? [],
