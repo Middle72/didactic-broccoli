@@ -48,6 +48,12 @@ Hosted on **Cloudflare Workers** (Workers Builds), connected to this GitHub repo
 
 Set the `AIRTABLE_TOKEN` secret under the Worker's **Settings → Variables and secrets** in the Cloudflare dashboard (type: Secret) — without it, the Adoptable/Rehabilitation pages just show an empty state.
 
+### bobbykelly.us forwarding
+
+This Worker also answers on `bobbykelly.us`/`www.bobbykelly.us` (added as a second pair of custom domains), but only to redirect: `src/middleware.ts` checks the request's `Host` header and, for `luckypennykitties.com`/`www.luckypennykitties.com` only, serves a self-contained "we've moved" page with a 7-second countdown (meta-refresh + JS fallback) to the matching path on `luckypennykitties.org`. Requests to `bobbykelly.us` pass through untouched and get the normal site.
+
+All pages are rendered on-demand (`export const prerender = false`) rather than prerendered to static HTML — this is required so the middleware's Host check runs for every route, including the home page and other previously-static pages, instead of being bypassed by Cloudflare's static asset serving. `wrangler.jsonc` also sets `assets.run_worker_first: true` so every request hits the Worker (and therefore the middleware) before any static-asset shortcut.
+
 ## Commands
 
 | Command           | Action                                       |
