@@ -53,13 +53,14 @@ function recordToCat(record: AirtableRecord): Cat {
   };
 }
 
-async function fetchCats(): Promise<Cat[]> {
-  const token = getSecret('AIRTABLE_TOKEN');
-  if (!token) {
-    console.warn('AIRTABLE_TOKEN is not set; returning no cats.');
-    return [];
-  }
+// Airtable's free plan has a monthly API call cap, and every page view of
+// /adoptable, /rehabilitation, or /kitties/[id] would otherwise trigger a
+// fresh call. Cache the full cat list for CATS_CACHE_SECONDS via Cloudflare's
+// Cache API so concurrent visitors share one Airtable call instead of one each.
+const CATS_CACHE_SECONDS = 120;
+const CATS_CACHE_KEY = new Request('https://cache.internal.invalid/lucky-penny-kitties-cats');
 
+async function fetchCatsUncached(token: string): Promise<AirtableRecord[]> {
   const records: AirtableRecord[] = [];
   let offset: string | undefined;
 
@@ -80,6 +81,35 @@ async function fetchCats(): Promise<Cat[]> {
     offset = data.offset;
   } while (offset);
 
+  return records;
+}
+
+async function fetchCats(): Promise<Cat[]> {
+  const token = getSecret('AIRTABLE_TOKEN');
+  if (!token) {
+    console.warn('AIRTABLE_TOKEN is not set; returning no cats.');
+    return [];
+  }
+
+  const cache = caches.default;
+  const cached = await cache.match(CATS_CACHE_KEY);
+  if (cached) {
+    const records: AirtableRecord[] = await cached.json();
+    return records.map(recordToCat);
+  }
+
+  const records = await fetchCatsUncached(token);
+
+  await cache.put(
+    CATS_CACHE_KEY,
+    new Response(JSON.stringify(records), {
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': `public, max-age=${CATS_CACHE_SECONDS}`,
+      },
+    }),
+  );
+
   return records.map(recordToCat);
 }
 
@@ -97,21 +127,6 @@ export async function getRehabCats(): Promise<Cat[]> {
 }
 
 export async function getCatById(id: string): Promise<Cat | null> {
-  const token = getSecret('AIRTABLE_TOKEN');
-  if (!token) {
-    console.warn('AIRTABLE_TOKEN is not set; cannot look up cat.');
-    return null;
-  }
-
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}/${id}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (res.status === 404) return null;
-  if (!res.ok) {
-    throw new Error(`Airtable request failed: ${res.status} ${res.statusText}`);
-  }
-
-  return recordToCat(await res.json());
+  const cats = await fetchCats();
+  return cats.find((cat) => cat.id === id) ?? null;
 }

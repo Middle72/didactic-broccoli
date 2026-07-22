@@ -28,6 +28,8 @@ Data comes from the **Lucky Penny Kitties** base (`apprSgTHj4HbR7IFB`), **Cats**
 
 `AIRTABLE_TOKEN` is declared as a `secret` in `astro.config.mjs`'s `env.schema` and read via `getSecret()` from `astro:env/server` (not `import.meta.env`) — this is required for the value to come from Cloudflare's runtime bindings rather than being baked in at build time.
 
+Airtable's free plan caps monthly API calls, and every view of Adoptable/Rehabilitation/a cat detail page would otherwise trigger a fresh Airtable request. `fetchCats()` in `src/lib/airtable.ts` caches the full cat list for 2 minutes via Cloudflare's Cache API (`caches.default`), so concurrent visitors within that window share one Airtable call instead of one each; `getCatById` reads from that same cached list instead of hitting a separate endpoint. `src/env.d.ts` adds the `caches.default` type Cloudflare provides but isn't in TypeScript's default DOM lib.
+
 Status field mapping (current best-effort, since the table wasn't built with public bio/rehab fields — see "Known gaps" below):
 
 - **Adoptable Kitties page**: Status = `Available`, `Pending`, or `In Foster`
